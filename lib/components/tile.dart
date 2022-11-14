@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-
-import 'board_state.dart';
+import 'package:lights_out/models/board_model.dart';
 
 class Tile extends StatefulWidget {
-  const Tile(
-      {required this.x, required this.y, required this.boardState, Key? key})
+  const Tile({required this.x, required this.y, required this.model, Key? key})
       : super(key: key);
 
   final int x;
   final int y;
-  final BoardState boardState;
+  final BoardModel model;
 
   @override
   State<Tile> createState() => _TileState();
 }
 
 class _TileState extends State<Tile> {
-  bool on = false;
+  bool isLit() {
+    return widget.model.isLit(widget.x, widget.y);
+  }
 
   @override
   Widget build(BuildContext context) {
-    on = widget.boardState.state[widget.x][widget.y];
-
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
-        backgroundColor: on ? Colors.blue : Colors.white,
+        backgroundColor: isLit() ? Colors.blue : Colors.white,
       ),
       child: Text(
         "${widget.x}, ${widget.y}",
@@ -36,7 +34,7 @@ class _TileState extends State<Tile> {
         ),
       ),
       onPressed: () {
-        widget.boardState.toggle(widget.x, widget.y);
+        widget.model.toggle(widget.x, widget.y);
       },
     );
   }

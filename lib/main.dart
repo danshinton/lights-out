@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lights_out/screens/game_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:lights_out/constants.dart';
 
+import 'screens/game_screen.dart';
+
+/// Entry point for the Lights Out application.
 void main() {
   runApp(const LightsOut());
 }
@@ -10,10 +14,17 @@ class LightsOut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lock the orientation for now since we have not created the landscape
+    // layout yet.
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
-      title: 'Lights Out',
+      title: appTitle,
+      initialRoute: GameScreen.id,
       routes: {
-        '/': (context) => const GameScreen(),
+        GameScreen.id: (context) => const GameScreen(),
       },
     );
   }

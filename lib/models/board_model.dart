@@ -17,6 +17,8 @@ class BoardModel extends ChangeNotifier {
 
   final int _size;
 
+  final Function? _solvedCallback;
+
   List<Tuple2<int, int>>? _initialSolution;
 
   bool _solving = false;
@@ -30,8 +32,9 @@ class BoardModel extends ChangeNotifier {
   /// Please be aware that at the time of this writing, only 5x5 boards are
   /// supported for auto-solve. So if you choose a different size, the game
   /// will be playable, but not auto-solvable.
-  BoardModel({int size = defaultBoardSize})
+  BoardModel({int size = defaultBoardSize, Function? solvedCallback})
       : _size = size,
+        _solvedCallback = solvedCallback,
         _state = List.generate(size, (index) => List.filled(size, false)) {
     _scramble();
   }
@@ -56,6 +59,11 @@ class BoardModel extends ChangeNotifier {
   /// Returns `true` if this board has been solved.
   bool solved() {
     return _solved;
+  }
+
+  /// Returns `true` if this board is in the process of being solved.
+  bool solving() {
+    return _solving;
   }
 
   /// This method is used when a solution is to be applied to the model.
@@ -83,6 +91,7 @@ class BoardModel extends ChangeNotifier {
       } else {
         t.cancel();
         _solving = false;
+        notifyListeners();
       }
     });
   }
@@ -114,6 +123,11 @@ class BoardModel extends ChangeNotifier {
 
     // Check for win
     _solved = _checkForWin();
+
+    // If solved, trigger callback
+    if (_solved && (_solvedCallback != null)) {
+      _solvedCallback!();
+    }
 
     // Tell everyone to update
     notifyListeners();
